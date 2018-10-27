@@ -14,15 +14,17 @@ module.exports = function(options = {}) {
       const user = context.params.user;
       _namespace = user[userIdKey] || user[userIdKey2] || 'default';
     } else{
-      _namespace = 'default';
+      _namespace = undefined;
     }
 
-    try {
-      await messageLimiter.consume(_namespace);
-    } catch (e) {
-      throw new errors.TooManyRequests(errorMessage || 'Too many requests', errorData);
+    if (_namespace) {
+      try {
+        await messageLimiter.consume(_namespace);
+      } catch (e) {
+        throw new errors.TooManyRequests(errorMessage || 'Too many requests', errorData);
+      }
     }
-
+    
     return context;
   };
 };
