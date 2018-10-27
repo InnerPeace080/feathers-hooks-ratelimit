@@ -3,14 +3,14 @@ const errors = require('@feathersjs/errors');
 const ip = require('ip');
 
 module.exports = function(options = {}) {
-  const { threshold, ttl, namespace, userIdKey, errorMessage, errorData } = options;
+  const { threshold, ttl, namespace, entity, userIdKey, errorMessage, errorData } = options;
   const messageLimiter = new FastRateLimit({ threshold, ttl });
 
   return async context => {
     let _namespace;
 
-    if (userIdKey && context.params && context.params.user) {
-      const user = context.params.user;
+    if (entity && userIdKey && context.params && context.params[entity]) {
+      const user = context.params[entity];
       if (user.roles && (user.roles.includes('admin') || user.roles.includes('manager')) ) {
         _namespace = undefined;
       }else{
