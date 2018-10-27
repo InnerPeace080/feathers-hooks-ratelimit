@@ -9,21 +9,7 @@ module.exports = function(options = {}) {
   return async context => {
     let _namespace;
 
-    if (namespace) {
-      if (namespace === 'ip') {
-        if (context.params.provider === 'socketio') {
-          _namespace = context.params.ip.replace('::ffff:','')
-        }else{
-          if (context.params.headers && context.params.headers['x-forwarded-for']) {
-            _namespace = context.params.headers['x-forwarded-for']
-          }else{
-            _namespace = undefined;
-          }
-        }
-      }else{
-        _namespace = namespace;
-      }
-    } else if(context.params && context.params.user) {
+    if (userIdKey && context.params && context.params.user) {
       const user = context.params.user;
       if (user.roles && (user.roles.includes('admin') || user.roles.includes('manager')) ) {
         _namespace = undefined;
@@ -41,8 +27,32 @@ module.exports = function(options = {}) {
           _namespace = user[userIdKey] || 'default';
         }
       }
-    } else{
+    }else{
       _namespace = undefined;
+    }
+
+    if (namespace) {
+      var addNamespace
+      if (namespace === 'ip') {
+        if (context.params.provider === 'socketio') {
+          addNamespace = context.params.ip.replace('::ffff:','')
+        }else{
+          if (context.params.headers && context.params.headers['x-forwarded-for']) {
+            addNamespace = context.params.headers['x-forwarded-for']
+          }else{
+            addNamespace = undefined;
+          }
+        }
+      }else{
+        addNamespace = namespace;
+      }
+      if (addNamespace) {
+        if (_namespace) {
+          _namespace = `${_namespace}-${addNamespace}`
+        }else{
+          _namespace=addNamespace
+        }
+      }
     }
 
     if (_namespace) {
