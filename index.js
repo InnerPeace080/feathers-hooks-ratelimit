@@ -2,7 +2,7 @@ const FastRateLimit = require('fast-ratelimit').FastRateLimit;
 const errors = require('@feathersjs/errors');
 
 module.exports = function(options = {}) {
-  const { threshold, ttl, namespace, userIdKey, userIdKey2, errorMessage, errorData } = options;
+  const { threshold, ttl, namespace, userIdKey, errorMessage, errorData } = options;
   const messageLimiter = new FastRateLimit({ threshold, ttl });
 
   return async context => {
@@ -12,6 +12,18 @@ module.exports = function(options = {}) {
       _namespace = namespace;
     } else if(context.params && context.params.user) {
       const user = context.params.user;
+      if (Array.isArray(userIdKey)) {
+        userIdKey.some((c)=>{
+          if (user[c]) {
+            _namespace = user[c];
+            return true
+          }
+          _namespace = 'default';
+          return false
+        })
+      }else{
+        _namespace = user[userIdKey] || 'default';
+      }
       _namespace = user[userIdKey] || user[userIdKey2] || 'default';
     } else{
       _namespace = undefined;
@@ -24,7 +36,7 @@ module.exports = function(options = {}) {
         throw new errors.TooManyRequests(errorMessage || 'Too many requests', errorData);
       }
     }
-    
+
     return context;
   };
 };
