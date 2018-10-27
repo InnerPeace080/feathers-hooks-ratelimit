@@ -12,18 +12,22 @@ module.exports = function(options = {}) {
       _namespace = namespace;
     } else if(context.params && context.params.user) {
       const user = context.params.user;
-      if (Array.isArray(userIdKey)) {
-        userIdKey.some((c)=>{
-          if (user[c]) {
-            _namespace = user[c];
-            return true
-          }
-          _namespace = 'default';
-          return false
-        })
+      if (user.roles && (user.roles.includes('admin') || user.roles.includes('manager')) ) {
+        _namespace = undefined;
       }else{
-        _namespace = user[userIdKey] || 'default';
-      }
+        if (Array.isArray(userIdKey)) {
+          userIdKey.some((c)=>{
+            if (user[c]) {
+              _namespace = user[c];
+              return true
+            }
+            _namespace = 'default';
+            return false
+          })
+        }else{
+          _namespace = user[userIdKey] || 'default';
+        }
+      }      
     } else{
       _namespace = undefined;
     }
