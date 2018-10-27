@@ -1,5 +1,6 @@
 const FastRateLimit = require('fast-ratelimit').FastRateLimit;
 const errors = require('@feathersjs/errors');
+const ip = require('ip');
 
 module.exports = function(options = {}) {
   const { threshold, ttl, namespace, userIdKey, errorMessage, errorData } = options;
@@ -9,7 +10,19 @@ module.exports = function(options = {}) {
     let _namespace;
 
     if (namespace) {
-      _namespace = namespace;
+      if (namespace === 'ip') {
+        if (context.params.provider === 'socketio') {
+          _namespace = context.params.ip.replace('::ffff:','')
+        }else{
+          if (context.params.headers && context.params.headers['x-forwarded-for']) {
+            _namespace = context.params.headers['x-forwarded-for']
+          }else{
+            _namespace = undefined;
+          }
+        }
+      }else{
+        _namespace = namespace;
+      }
     } else if(context.params && context.params.user) {
       const user = context.params.user;
       if (user.roles && (user.roles.includes('admin') || user.roles.includes('manager')) ) {
@@ -27,7 +40,7 @@ module.exports = function(options = {}) {
         }else{
           _namespace = user[userIdKey] || 'default';
         }
-      }      
+      }
     } else{
       _namespace = undefined;
     }
