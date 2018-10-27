@@ -24,7 +24,6 @@ module.exports = function(options = {}) {
       }else{
         _namespace = user[userIdKey] || 'default';
       }
-      _namespace = user[userIdKey] || user[userIdKey2] || 'default';
     } else{
       _namespace = undefined;
     }
