@@ -6,7 +6,7 @@ module.exports = function(options = {}) {
   const { threshold, ttl, namespace, entity, userIdKey, errorMessage, errorData } = options;
   const messageLimiter = new FastRateLimit({ threshold, ttl });
 
-  return async context => {
+  return async (context) => {
     let _namespace;
 
     if (entity && userIdKey && context.params && context.params[entity]) {
@@ -18,11 +18,13 @@ module.exports = function(options = {}) {
           userIdKey.some((c)=>{
             if (user[c]) {
               _namespace = user[c];
-              return true
+
+              return true;
             }
             _namespace = 'default';
-            return false
-          })
+
+            return false;
+          });
         }else{
           _namespace = user[userIdKey] || 'default';
         }
@@ -32,13 +34,13 @@ module.exports = function(options = {}) {
     }
 
     if (namespace) {
-      var addNamespace
+      var addNamespace;
       if (namespace === 'ip') {
         if (context.params.provider === 'socketio') {
-          addNamespace = context.params.ip.replace('::ffff:','')
+          addNamespace = context.params.ip.replace('::ffff:', '');
         }else{
           if (context.params.headers && context.params.headers['x-forwarded-for']) {
-            addNamespace = context.params.headers['x-forwarded-for']
+            addNamespace = context.params.headers['x-forwarded-for'];
           }else{
             addNamespace = undefined;
           }
@@ -48,9 +50,9 @@ module.exports = function(options = {}) {
       }
       if (addNamespace) {
         if (_namespace) {
-          _namespace = `${_namespace}-${addNamespace}`
+          _namespace = `${_namespace}-${addNamespace}`;
         }else{
-          _namespace=addNamespace
+          _namespace=addNamespace;
         }
       }
     }
