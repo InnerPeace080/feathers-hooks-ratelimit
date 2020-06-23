@@ -1,6 +1,5 @@
 const FastRateLimit = require('fast-ratelimit').FastRateLimit;
 const errors = require('@feathersjs/errors');
-const ip = require('ip');
 
 module.exports = function(options = {}) {
   const { threshold, ttl, namespace, entity, userIdKey, errorMessage, errorData } = options;
@@ -39,8 +38,8 @@ module.exports = function(options = {}) {
         if (context.params.provider === 'socketio') {
           addNamespace = context.params.ip.replace('::ffff:', '');
         }else{
-          if (context.params.headers && context.params.headers['x-forwarded-for']) {
-            addNamespace = context.params.headers['x-forwarded-for'];
+          if (context.params.headers && context.params.headers['x-real-ip']) {
+            addNamespace = context.params.headers['x-real-ip'];
           }else{
             addNamespace = undefined;
           }
