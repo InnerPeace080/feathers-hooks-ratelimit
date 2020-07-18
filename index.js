@@ -60,7 +60,7 @@ module.exports = function(options = {}) {
       try {
         await messageLimiter.consume(_namespace);
       } catch (e) {
-        throw new errors.TooManyRequests(errorMessage || 'Too many requests', errorData);
+        throw new errors.TooManyRequests(errorMessage || `${_namespace} : Too many requests`, errorData);
       }
     }
 
