@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@feathersjs/errors": "^3.2.0",
-    "fast-ratelimit": "git+https://github.com/InnerPeace080/node-fast-ratelimit.git#3.1.0",
+    "fast-ratelimit": "git+https://github.com/InnerPeace080/node-fast-ratelimit.git#3.1.1",
     "ip": "^1.1.5"
   }
 }
